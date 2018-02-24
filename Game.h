@@ -1,6 +1,6 @@
 #pragma once
 #include "SDL.h"
-
+#include "SerialInterface.h"
 
 class Game
 {
@@ -14,12 +14,18 @@ public:
 	void handleEvents();
 	void clean();
 
-	bool running() { return isRunning; };
+	bool running() 
+	{ 
+		return isRunning; 
+	};
 
 private:
 	SDL_Window* mainWindow;
 	SDL_Renderer* mainRenderer;
 
 	bool isRunning;
+
+	SerialInterface* serialInterface; //should really be put after SDL runs
+
 };
 

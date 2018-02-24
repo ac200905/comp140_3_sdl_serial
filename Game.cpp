@@ -10,7 +10,8 @@ using std::cout;
 */
 Game::Game()
 {
-	
+	serialInterface = new SerialInterface();
+
 }
 
 /*
@@ -27,42 +28,50 @@ Game::~Game()
 bool Game::init(const char * title, int xpos, int ypos, int width, int height, int flags)
 {
 	// initialise SDL
-	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) 
+	{
 		cout << "SDL init success \n";
 
 		// Create a window
 		mainWindow = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
 
 		// if window succesful..
-		if (mainWindow != 0) {
+		if (mainWindow != 0) 
+		{
 			cout << "Window creation success \n";
 
 			// create renderer
 			mainRenderer = SDL_CreateRenderer(mainWindow, -1, 0);
 
 			// if renderer successful...
-			if (mainRenderer != 0) {
+			if (mainRenderer != 0) 
+			{
 				cout << "Renderer creation success \n";
 				SDL_SetRenderDrawColor(mainRenderer, 255, 255, 255, 255);
 			}
-			else {
+			else 
+			{
 				cout << "renderer failed \n";
 				return false;
 			}
 		}
-		else {
+		else 
+		{
 			cout << "window failed \n";
 			return false;
 		}
 
 	}
-	else {
+	else 
+	{
 		cout << "SDL fail \n";
 		return false;
 	}
 
 	isRunning = true;
 	cout << "SDL init success \n";
+
+	//instantiate serial here
 
 	return true;
 }
@@ -76,6 +85,23 @@ void Game::render()
 	SDL_RenderClear(mainRenderer);
 
 	// draw to the screen here!
+	SDL_Rect player1;
+	player1.x = 50;
+	player1.y = serialInterface->getPot1();
+	player1.w = 30;
+	player1.h = 80;
+
+	SDL_SetRenderDrawColor(mainRenderer, 255, 0, 0, 255);
+	SDL_RenderFillRect(mainRenderer, &player1);
+
+	SDL_Rect player2;
+	player2.x = 590;
+	player2.y = serialInterface->getPot2();
+	player2.w = 30;
+	player2.h = 80;
+
+	SDL_SetRenderDrawColor(mainRenderer, 255, 0, 0, 255);
+	SDL_RenderFillRect(mainRenderer, &player2);
 	
 	// render new frame
 	SDL_RenderPresent(mainRenderer);
@@ -87,7 +113,7 @@ void Game::render()
 */
 void Game::update()
 {
-	
+	serialInterface->getPositions();
 }
 
 /*
@@ -98,8 +124,10 @@ void Game::handleEvents()
 {
 	SDL_Event event;
 
-	if (SDL_PollEvent(&event)) {
-		switch (event.type) {
+	if (SDL_PollEvent(&event)) 
+	{
+		switch (event.type) 
+		{
 		case SDL_QUIT:
 			isRunning = false;
 			break;
@@ -118,6 +146,7 @@ void Game::handleEvents()
 */
 void Game::clean()
 {	
+	serialInterface->close();
 	cout << "Cleaning SDL \n";
 	SDL_DestroyWindow(mainWindow);
 	SDL_DestroyRenderer(mainRenderer);
